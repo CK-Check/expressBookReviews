@@ -56,21 +56,21 @@ public_users.post("/register", (req,res) => {
 // });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-    const authorName = req.params.author;
+// public_users.get('/author/:author',function (req, res) {
+//     const authorName = req.params.author;
   
-    const allBooks = Object.values(books);
+//     const allBooks = Object.values(books);
   
-    const filteredBooks = allBooks.filter(
-      (book) => book.author.toLowerCase() === authorName.toLowerCase()
-    );
+//     const filteredBooks = allBooks.filter(
+//       (book) => book.author.toLowerCase() === authorName.toLowerCase()
+//     );
   
-    if (filteredBooks.length > 0) {
-      return res.status(200).send(JSON.stringify(filteredBooks, null, 4));
-    } else {
-      return res.status(404).json({ message: "No books found for this author" });
-    }
-});
+//     if (filteredBooks.length > 0) {
+//       return res.status(200).send(JSON.stringify(filteredBooks, null, 4));
+//     } else {
+//       return res.status(404).json({ message: "No books found for this author" });
+//     }
+// });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
@@ -137,6 +137,35 @@ public_users.get('/', async function (req, res) {
     } catch (error) {
       return res.status(500).json({
         message: "Error fetching book details",
+        error: error.message
+      });
+    }
+  });
+
+  public_users.get('/author/:author', async function (req, res) {
+    const authorName = req.params.author;
+  
+    try {
+      const response = await axios.get('http://localhost:5000/customer');
+  
+      const booksData = response.data;
+      const allBooks = Object.values(booksData);
+  
+      const filteredBooks = allBooks.filter(
+        (book) => book.author.toLowerCase() === authorName.toLowerCase()
+      );
+  
+      if (filteredBooks.length > 0) {
+        return res.status(200).send(JSON.stringify(filteredBooks, null, 4));
+      } else {
+        return res.status(404).json({
+          message: "No books found for this author"
+        });
+      }
+  
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error fetching books by author",
         error: error.message
       });
     }
